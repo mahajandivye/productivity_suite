@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Productivity Suite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #000000;
+      --card-bg: #f5f5f5;
+    }
+
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --card-bg: #1f1f1f;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: var(--card-bg);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+    }
+
+    .toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .toggle-mode {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+
+    .toggle-mode:hover {
+      background-color: #0056b3;
+    }
+
+    .intro {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .intro h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .intro p {
+      font-size: 1rem;
+      color: gray;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h2 {
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      color: gray;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .card a {
+      text-decoration: none;
+      color: white;
+      background-color: #28a745;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+
+    .card a:hover {
+      background-color: #1e7e34;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: var(--card-bg);
+      font-size: 0.9rem;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>Productivity Suite</h1>
+      <div class="toggle-wrapper">
+        <span id="modeStatus">Light Mode</span>
+        <button class="toggle-mode" onclick="toggleMode()">Toggle Mode</button>
+      </div>
+    </header>
+
+    <section class="intro">
+      <h2>Welcome to Your Productivity Toolkit</h2>
+      <p>
+        Manage your time efficiently with tools like the sleep tracker, Pomodoro timer, schedule planner, and to-do list. Stay organized, stay focused.
+      </p>
+    </section>
+
+    <main>
+      <div class="card">
+        <h2>🛌 Sleep Tracker</h2>
+        <p>Monitor your sleep duration and improve your routine.</p>
+        <a href="sleep.html">Open</a>
+      </div>
+
+      <div class="card">
+        <h2>⏳ Pomodoro Timer</h2>
+        <p>Boost focus with customized Pomodoro work sessions.</p>
+        <a href="pomodoro.html">Open</a>
+      </div>
+
+      <div class="card">
+        <h2>📅 Daily Schedule</h2>
+        <p>Plan your day with a flexible, time-blocked schedule.</p>
+        <a href="schedule.html">Open</a>
+      </div>
+
+      <div class="card">
+        <h2>✅ To-Do List</h2>
+        <p>Stay on top of tasks with a responsive checklist.</p>
+        <a href="todo.html">Open</a>
+      </div>
+    </main>
+
+    <footer>
+      © 2025 — Built by You. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle('dark');
+      const modeText = document.getElementById('modeStatus');
+      modeText.textContent = document.body.classList.contains('dark') ? "Dark Mode" : "Light Mode";
+    }
+  </script>
+</body>
+</html>
