@@ -227,151 +227,154 @@
     &copy; 2025 Productivity Suite by Divye Mahajan. All rights reserved.
   </footer>
 
-<script>
-  let timer;
-  let timeLeft = 0;
-  let isRunning = false;
-  let isWorkSession = true;
-  let audio = null;
-
-  function toggleMode() {
-    const isDark = document.body.classList.toggle('dark');
-    document.getElementById("modeLabel").textContent = isDark ? "Dark Mode" : "Light Mode";
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  }
-
-  document.getElementById("soundFile").addEventListener("change", function () {
-    const file = this.files[0];
-    if (file) {
-      audio = new Audio(URL.createObjectURL(file));
-    }
-  });
-
-  function startTimer() {
-    if (isRunning) return;
-    isRunning = true;
-
-    const workMinutes = parseInt(document.getElementById('workDuration').value);
-    const breakMinutes = parseInt(document.getElementById('breakDuration').value);
-
-    if (timeLeft <= 0) {
-      timeLeft = (isWorkSession ? workMinutes : breakMinutes) * 60;
+  <script>
+    // Theme Toggle
+    function toggleMode() {
+      const isDark = document.body.classList.toggle('dark');
+      document.getElementById("modeLabel").textContent = isDark ? "Dark Mode" : "Light Mode";
+      localStorage.setItem("theme", isDark ? "dark" : "light");
     }
 
-    updateDisplay();
-    saveTimerState();
+    // Load theme on startup
+    window.onload = () => {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+        document.getElementById("modeLabel").textContent = "Dark Mode";
+      }
 
-    timer = setInterval(() => {
-      timeLeft--;
+      loadTasks();
+      loadTimerState();
+    };
+
+    // Timer
+    let timer;
+    let timeLeft = 0;
+    let isRunning = false;
+    let isWorkSession = true;
+    let audio = null;
+
+    document.getElementById("soundFile").addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        audio = new Audio(URL.createObjectURL(file));
+      }
+    });
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+
+      const workMinutes = parseInt(document.getElementById('workDuration').value);
+      const breakMinutes = parseInt(document.getElementById('breakDuration').value);
+
+      if (timeLeft <= 0) {
+        timeLeft = (isWorkSession ? workMinutes : breakMinutes) * 60;
+      }
+
       updateDisplay();
       saveTimerState();
 
-      if (timeLeft <= 0) {
-        clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        updateDisplay();
+        saveTimerState();
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          isRunning = false;
+
+          if (audio) audio.play();
+          else alert(isWorkSession ? "Work session complete! Time for a break." : "Break over! Get back to work.");
+
+          isWorkSession = !isWorkSession;
+          timeLeft = (isWorkSession ? workMinutes : breakMinutes) * 60;
+
+          saveTimerState();
+          startTimer();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timer);
+      isRunning = false;
+      saveTimerState();
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      isRunning = false;
+      isWorkSession = true;
+      const workMinutes = parseInt(document.getElementById('workDuration').value);
+      timeLeft = workMinutes * 60;
+      updateDisplay();
+      saveTimerState();
+    }
+
+    function updateDisplay() {
+      const display = document.getElementById("display");
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function saveTimerState() {
+      localStorage.setItem("pomodoroState", JSON.stringify({
+        timeLeft,
+        isRunning,
+        isWorkSession,
+        workDuration: document.getElementById('workDuration').value,
+        breakDuration: document.getElementById('breakDuration').value
+      }));
+    }
+
+    function loadTimerState() {
+      const saved = JSON.parse(localStorage.getItem("pomodoroState"));
+      if (saved) {
+        timeLeft = saved.timeLeft;
         isRunning = false;
-        saveTimerState();
-
-        if (audio) audio.play();
-        else alert(isWorkSession ? "Work session complete! Time for a break." : "Break over! Get back to work.");
-
-        isWorkSession = !isWorkSession;
-        timeLeft = (isWorkSession ? workMinutes : breakMinutes) * 60;
-        saveTimerState();
-        startTimer(); // auto-start next session
+        isWorkSession = saved.isWorkSession;
+        document.getElementById('workDuration').value = saved.workDuration;
+        document.getElementById('breakDuration').value = saved.breakDuration;
+        updateDisplay();
       }
-    }, 1000);
-  }
-
-  function pauseTimer() {
-    clearInterval(timer);
-    isRunning = false;
-    saveTimerState();
-  }
-
-  function resetTimer() {
-    clearInterval(timer);
-    isRunning = false;
-    isWorkSession = true;
-    const workMinutes = parseInt(document.getElementById('workDuration').value);
-    timeLeft = workMinutes * 60;
-    updateDisplay();
-    saveTimerState();
-  }
-
-  function updateDisplay() {
-    const display = document.getElementById("display");
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  }
-
-  function saveTimerState() {
-    const state = {
-      timeLeft,
-      isRunning,
-      isWorkSession,
-      workDuration: document.getElementById('workDuration').value,
-      breakDuration: document.getElementById('breakDuration').value
-    };
-    localStorage.setItem("pomodoroState", JSON.stringify(state));
-  }
-
-  function loadTimerState() {
-    const saved = JSON.parse(localStorage.getItem("pomodoroState"));
-    if (saved) {
-      timeLeft = saved.timeLeft;
-      isRunning = saved.isRunning;
-      isWorkSession = saved.isWorkSession;
-      document.getElementById('workDuration').value = saved.workDuration;
-      document.getElementById('breakDuration').value = saved.breakDuration;
-      updateDisplay();
-
-      if (isRunning) {
-        startTimer();
-      }
-    } else {
-      timeLeft = parseInt(document.getElementById('workDuration').value) * 60;
-      updateDisplay();
-    }
-  }
-
-  function addTask() {
-    const text = document.getElementById("taskText").value.trim();
-    if (text === "") return;
-    const li = document.createElement("li");
-    li.innerHTML = `${text} <button onclick="this.parentElement.remove(); saveTasks()">✕</button>`;
-    document.getElementById("taskList").appendChild(li);
-    document.getElementById("taskText").value = "";
-    saveTasks();
-  }
-
-  function saveTasks() {
-    const tasks = [];
-    document.querySelectorAll("#taskList li").forEach(li => {
-      tasks.push(li.textContent.trim());
-    });
-    localStorage.setItem("pomodoroTasks", JSON.stringify(tasks));
-  }
-
-  function loadTasks() {
-    const savedTasks = JSON.parse(localStorage.getItem("pomodoroTasks")) || [];
-    savedTasks.forEach(task => {
-      const li = document.createElement("li");
-      li.innerHTML = `${task} <button onclick="this.parentElement.remove(); saveTasks()">✕</button>`;
-      document.getElementById("taskList").appendChild(li);
-    });
-  }
-
-  window.onload = () => {
-    if (localStorage.getItem("theme") === "dark") {
-      document.body.classList.add("dark");
-      document.getElementById("modeLabel").textContent = "Dark Mode";
     }
 
-    loadTasks();
-    loadTimerState();
-  };
-</script>
+    // Tasks
+    function addTask() {
+      const text = document.getElementById("taskText").value.trim();
+      if (text === "") return;
 
+      const tasks = JSON.parse(localStorage.getItem("pomodoroTasks") || "[]");
+      tasks.push(text);
+      localStorage.setItem("pomodoroTasks", JSON.stringify(tasks));
+
+      renderTasks();
+      document.getElementById("taskText").value = "";
+    }
+
+    function loadTasks() {
+      renderTasks();
+    }
+
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
+      const tasks = JSON.parse(localStorage.getItem("pomodoroTasks") || "[]");
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `${task} <button onclick="deleteTask(${index})">✕</button>`;
+        taskList.appendChild(li);
+      });
+    }
+
+    function deleteTask(index) {
+      const tasks = JSON.parse(localStorage.getItem("pomodoroTasks") || "[]");
+      tasks.splice(index, 1);
+      localStorage.setItem("pomodoroTasks", JSON.stringify(tasks));
+      renderTasks();
+    }
+  </script>
 </body>
 </html>
