@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Pomodoro Timer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-color: #ffffff;
@@ -12,12 +12,14 @@
       --card-bg: #f5f5f5;
       --footer-bg: #e0e0e0;
     }
+
     body.dark {
       --bg-color: #121212;
       --text-color: #f0f0f0;
       --card-bg: #1f1f1f;
       --footer-bg: #1a1a1a;
     }
+
     body {
       font-family: 'Poppins', sans-serif;
       background-color: var(--bg-color);
@@ -27,20 +29,6 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
-    #bg-video {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: -1;
-      opacity: 0.2;
-      pointer-events: none;
-    }
-
-    #audio-video {
-      position: absolute;
-      top: -1000px; /* Hide the actual player */
-    }
-
     header {
       background-color: var(--card-bg);
       padding: 1rem 2rem;
@@ -48,6 +36,10 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
     }
 
     .toggle-mode {
@@ -69,26 +61,27 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
 
-    .timer, .tasks, .music {
-      margin-bottom: 2rem;
+    .timer {
+      text-align: center;
     }
 
     .time {
       font-size: 4rem;
-      text-align: center;
+      margin-bottom: 1rem;
     }
 
-    .controls, .inputs {
+    .controls {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin: 1rem 0;
+      margin-bottom: 2rem;
     }
 
-    .controls button, .task-input button {
+    .controls button {
       padding: 0.7rem 1.5rem;
+      font-size: 1rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
     }
@@ -97,12 +90,27 @@
     .pause { background-color: #ffc107; color: black; }
     .reset { background-color: #dc3545; color: white; }
 
+    .inputs {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
     .inputs input {
       width: 60px;
-      text-align: center;
       padding: 0.5rem;
+      text-align: center;
       border: 1px solid #ccc;
       border-radius: 8px;
+    }
+
+    .tasks {
+      margin-top: 2rem;
+    }
+
+    .tasks h3 {
+      margin-bottom: 0.5rem;
     }
 
     .task-input {
@@ -116,6 +124,15 @@
       padding: 0.5rem;
       border-radius: 8px;
       border: 1px solid #ccc;
+    }
+
+    .task-input button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
     .task-list {
@@ -133,37 +150,34 @@
       align-items: center;
     }
 
+    .task-list button {
+      border: none;
+      background: transparent;
+      color: red;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     footer {
       text-align: center;
       padding: 1rem;
       background-color: var(--footer-bg);
+      color: var(--text-color);
       font-size: 0.9rem;
+      margin-top: 3rem;
     }
 
-    .music input {
-      width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 0.5rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+    .sound-selector {
+      text-align: center;
+      margin-top: 1.5rem;
     }
 
-    .music button {
-      width: 100%;
-      padding: 0.7rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
+    .sound-selector label, .sound-selector input {
+      margin-right: 1rem;
     }
   </style>
 </head>
 <body>
-  <iframe id="bg-video" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen muted></iframe>
-  <iframe id="audio-video" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-
   <header>
     <h1>Pomodoro Timer</h1>
     <div>
@@ -177,11 +191,11 @@
       <div class="inputs">
         <div>
           <label>Work (min)</label><br>
-          <input type="number" id="workDuration" value="25" min="1"/>
+          <input type="number" id="workDuration" value="25" min="1" />
         </div>
         <div>
           <label>Break (min)</label><br>
-          <input type="number" id="breakDuration" value="5" min="1"/>
+          <input type="number" id="breakDuration" value="5" min="1" />
         </div>
       </div>
 
@@ -193,9 +207,9 @@
         <button class="reset" onclick="resetTimer()">Reset</button>
       </div>
 
-      <div class="sound-selector" style="text-align:center;">
-        <label>Session End Sound: </label>
-        <input type="file" id="soundFile" accept="audio/*"/>
+      <div class="sound-selector">
+        <label for="soundFile">Session End Sound:</label>
+        <input type="file" id="soundFile" accept="audio/*">
       </div>
     </div>
 
@@ -207,12 +221,6 @@
       </div>
       <ul class="task-list" id="taskList"></ul>
     </div>
-
-    <div class="music">
-      <h3>Search YouTube Music</h3>
-      <input type="text" id="musicSearch" placeholder="Search for a song...">
-      <button onclick="searchMusic()">Play Music</button>
-    </div>
   </div>
 
   <footer>
@@ -220,40 +228,49 @@
   </footer>
 
   <script>
-    const API_KEY = "AIzaSyABsmSD4rmBq4Dq4jOKmDG3d-cjxNWIvkk";
-
-    // Theme toggle
+    // Theme Toggle
     function toggleMode() {
-      const isDark = document.body.classList.toggle("dark");
+      const isDark = document.body.classList.toggle('dark');
       document.getElementById("modeLabel").textContent = isDark ? "Dark Mode" : "Light Mode";
       localStorage.setItem("theme", isDark ? "dark" : "light");
     }
 
+    // Load theme on startup
     window.onload = () => {
       if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark");
         document.getElementById("modeLabel").textContent = "Dark Mode";
       }
+
       loadTasks();
       loadTimerState();
-      loadMusicVideo();
     };
 
-    // Pomodoro Timer
-    let timer, timeLeft = 0, isRunning = false, isWorkSession = true;
+    // Timer
+    let timer;
+    let timeLeft = 0;
+    let isRunning = false;
+    let isWorkSession = true;
     let audio = null;
 
     document.getElementById("soundFile").addEventListener("change", function () {
       const file = this.files[0];
-      if (file) audio = new Audio(URL.createObjectURL(file));
+      if (file) {
+        audio = new Audio(URL.createObjectURL(file));
+      }
     });
 
     function startTimer() {
       if (isRunning) return;
       isRunning = true;
-      const workMin = parseInt(document.getElementById("workDuration").value);
-      const breakMin = parseInt(document.getElementById("breakDuration").value);
-      if (timeLeft <= 0) timeLeft = (isWorkSession ? workMin : breakMin) * 60;
+
+      const workMinutes = parseInt(document.getElementById('workDuration').value);
+      const breakMinutes = parseInt(document.getElementById('breakDuration').value);
+
+      if (timeLeft <= 0) {
+        timeLeft = (isWorkSession ? workMinutes : breakMinutes) * 60;
+      }
+
       updateDisplay();
       saveTimerState();
 
@@ -261,13 +278,17 @@
         timeLeft--;
         updateDisplay();
         saveTimerState();
+
         if (timeLeft <= 0) {
           clearInterval(timer);
           isRunning = false;
+
           if (audio) audio.play();
-          else alert(isWorkSession ? "Work session complete!" : "Break over!");
+          else alert(isWorkSession ? "Work session complete! Time for a break." : "Break over! Get back to work.");
+
           isWorkSession = !isWorkSession;
-          timeLeft = (isWorkSession ? workMin : breakMin) * 60;
+          timeLeft = (isWorkSession ? workMinutes : breakMinutes) * 60;
+
           saveTimerState();
           startTimer();
         }
@@ -284,23 +305,26 @@
       clearInterval(timer);
       isRunning = false;
       isWorkSession = true;
-      timeLeft = parseInt(document.getElementById("workDuration").value) * 60;
+      const workMinutes = parseInt(document.getElementById('workDuration').value);
+      timeLeft = workMinutes * 60;
       updateDisplay();
       saveTimerState();
     }
 
     function updateDisplay() {
+      const display = document.getElementById("display");
       const minutes = Math.floor(timeLeft / 60);
       const seconds = timeLeft % 60;
-      document.getElementById("display").textContent =
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
 
     function saveTimerState() {
       localStorage.setItem("pomodoroState", JSON.stringify({
-        timeLeft, isRunning: false, isWorkSession,
-        workDuration: document.getElementById("workDuration").value,
-        breakDuration: document.getElementById("breakDuration").value
+        timeLeft,
+        isRunning,
+        isWorkSession,
+        workDuration: document.getElementById('workDuration').value,
+        breakDuration: document.getElementById('breakDuration').value
       }));
     }
 
@@ -308,9 +332,10 @@
       const saved = JSON.parse(localStorage.getItem("pomodoroState"));
       if (saved) {
         timeLeft = saved.timeLeft;
+        isRunning = false;
         isWorkSession = saved.isWorkSession;
-        document.getElementById("workDuration").value = saved.workDuration;
-        document.getElementById("breakDuration").value = saved.breakDuration;
+        document.getElementById('workDuration').value = saved.workDuration;
+        document.getElementById('breakDuration').value = saved.breakDuration;
         updateDisplay();
       }
     }
@@ -318,22 +343,29 @@
     // Tasks
     function addTask() {
       const text = document.getElementById("taskText").value.trim();
-      if (!text) return;
+      if (text === "") return;
+
       const tasks = JSON.parse(localStorage.getItem("pomodoroTasks") || "[]");
       tasks.push(text);
       localStorage.setItem("pomodoroTasks", JSON.stringify(tasks));
+
       renderTasks();
       document.getElementById("taskText").value = "";
     }
 
+    function loadTasks() {
+      renderTasks();
+    }
+
     function renderTasks() {
-      const list = document.getElementById("taskList");
-      list.innerHTML = "";
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
       const tasks = JSON.parse(localStorage.getItem("pomodoroTasks") || "[]");
-      tasks.forEach((task, i) => {
+      tasks.forEach((task, index) => {
         const li = document.createElement("li");
-        li.innerHTML = `${task} <button onclick="deleteTask(${i})">✕</button>`;
-        list.appendChild(li);
+        li.innerHTML = `${task} <button onclick="deleteTask(${index})">✕</button>`;
+        taskList.appendChild(li);
       });
     }
 
@@ -342,45 +374,6 @@
       tasks.splice(index, 1);
       localStorage.setItem("pomodoroTasks", JSON.stringify(tasks));
       renderTasks();
-    }
-
-    function loadTasks() {
-      renderTasks();
-    }
-
-    // YouTube Background Music
-    function searchMusic() {
-      const query = document.getElementById("musicSearch").value;
-      if (!query) return;
-
-      fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&key=${API_KEY}&type=video&maxResults=1`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.items.length > 0) {
-            const videoId = data.items[0].id.videoId;
-            localStorage.setItem("lastVideoId", videoId);
-            setVideo(videoId);
-          } else {
-            alert("No music found");
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Failed to fetch music");
-        });
-    }
-
-    function loadMusicVideo() {
-      const videoId = localStorage.getItem("lastVideoId");
-      if (videoId) setVideo(videoId);
-    }
-
-    function setVideo(videoId) {
-      const bg = document.getElementById("bg-video");
-      const audio = document.getElementById("audio-video");
-
-      bg.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1`;
-      audio.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1`;
     }
   </script>
 </body>
